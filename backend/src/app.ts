@@ -1,9 +1,10 @@
-import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import express from "express";
 import { connectDB } from "./config/db";
-import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./docs/swagger";
+import { seedAdmin } from "./config/seed";
+import swaggerUi from "swagger-ui-express";
 
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
@@ -13,6 +14,8 @@ import historyRoutes from "./routes/history.routes";
 
 dotenv.config();
 connectDB();
+
+seedAdmin();
 
 const app = express();
 app.use(cors());
