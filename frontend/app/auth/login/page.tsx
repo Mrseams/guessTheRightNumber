@@ -1,39 +1,39 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useToast } from "@/hooks/use-toast"
-import { Toaster } from "@/components/ui/toaster"
-import { Eye, EyeOff, LogIn, Loader2 } from "lucide-react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
+import { Eye, EyeOff, LogIn, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
-  const { toast } = useToast()
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const { toast } = useToast();
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    })
-  }
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     try {
       const response = await fetch(`${apiUrl}/auth/login`, {
@@ -42,39 +42,43 @@ export default function LoginPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (response.ok) {
         // Store token and user data
-        localStorage.setItem("token", data.token)
-        localStorage.setItem("user", JSON.stringify(data.user))
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
 
         toast({
           title: "Login Successful!",
           description: `Welcome back, ${data.user.username}!`,
-        })
+        });
 
         // Redirect to dashboard
-        router.push("/")
+        if (data.user.role === "admin") {
+          router.push("/admin");
+        } else {
+          router.push("/");
+        }
       } else {
         toast({
           title: "Login Failed",
           description: data.message || "Invalid credentials",
           variant: "destructive",
-        })
+        });
       }
     } catch (error) {
       toast({
         title: "Error",
         description: "Something went wrong. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
@@ -83,7 +87,9 @@ export default function LoginPage() {
           <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
             <span className="text-white font-bold text-2xl">TN</span>
           </div>
-          <CardTitle className="text-2xl font-bold text-white">Welcome Back</CardTitle>
+          <CardTitle className="text-2xl font-bold text-white">
+            Welcome Back
+          </CardTitle>
           <p className="text-gray-400">Sign in to your TrueNumber account</p>
         </CardHeader>
         <CardContent>
@@ -126,7 +132,11 @@ export default function LoginPage() {
                   className="absolute right-0 top-0 h-full px-3 text-gray-400 hover:text-white"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </Button>
               </div>
             </div>
@@ -153,7 +163,10 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <p className="text-gray-400">
               {"Don't have an account? "}
-              <Link href="/auth/signup" className="text-blue-400 hover:text-blue-300 font-medium">
+              <Link
+                href="/auth/signup"
+                className="text-blue-400 hover:text-blue-300 font-medium"
+              >
                 Sign up
               </Link>
             </p>
@@ -162,5 +175,5 @@ export default function LoginPage() {
       </Card>
       <Toaster />
     </div>
-  )
+  );
 }
