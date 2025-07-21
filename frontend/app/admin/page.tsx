@@ -42,38 +42,14 @@ interface User {
   id: string;
   username: string;
   email: string;
+  password: string;
   role: "client" | "admin";
   createdAt: string;
   lastLogin?: string;
 }
 
 export default function AdminDashboard() {
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: "1",
-      username: "demo_user",
-      email: "demo@truenumber.com",
-      role: "client",
-      createdAt: "2024-01-15",
-      lastLogin: "2024-01-20",
-    },
-    {
-      id: "2",
-      username: "john_doe",
-      email: "john@example.com",
-      role: "client",
-      createdAt: "2024-01-10",
-      lastLogin: "2024-01-19",
-    },
-    {
-      id: "3",
-      username: "admin_user",
-      email: "admin@truenumber.com",
-      role: "admin",
-      createdAt: "2024-01-01",
-      lastLogin: "2024-01-20",
-    },
-  ]);
+  const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -106,6 +82,7 @@ export default function AdminDashboard() {
       const newUser: User = {
         id: Date.now().toString(),
         username: formData.username,
+        password: formData.password,
         email: formData.email,
         role: formData.role,
         createdAt: new Date().toISOString().split("T")[0],
@@ -145,6 +122,22 @@ export default function AdminDashboard() {
     if (!selectedUser) return;
 
     try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/${selectedUser._id}`,
+        {
+          method: "PUT",
+          body: JSON.stringify(selectedUser),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authUtils.getToken()}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch users");
+      }
+
       const updatedUsers = users.map((user) =>
         user.id === selectedUser.id
           ? {
@@ -475,7 +468,7 @@ export default function AdminDashboard() {
                               variant="ghost"
                               size="icon"
                               onClick={() =>
-                                handleDeleteUser(user.id, user.username)
+                                handleDeleteUser(user._id, user.username)
                               }
                               className="text-red-400 hover:text-red-300 hover:bg-gray-700"
                             >
