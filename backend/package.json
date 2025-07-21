@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
@@ -11,7 +11,7 @@
   "license": "ISC",
   "author": "Mrseams (@Mrseams)",
   "homepage": "https://github.com/Mrseams/backend",
-  "description": "api to handleng the backend of the application",
+  "description": "API to handle the backend of the application",
   "keywords": [
     "api",
     "game",
@@ -20,6 +20,9 @@
     "express",
     "backend"
   ],
+  "engines": {
+    "node": "18.x"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
