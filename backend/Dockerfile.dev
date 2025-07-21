@@ -1,0 +1,14 @@
+FROM node:18
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+# Copie tout le code (monté via volume en dev)
+COPY . .
+
+# Pour éviter des erreurs d'inotify en Alpine
+ENV CHOKIDAR_USEPOLLING=true
+
+CMD ["npx", "ts-node-dev", "--respawn", "--transpile-only", "src/server.ts"]
