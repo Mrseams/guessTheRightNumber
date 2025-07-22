@@ -126,7 +126,13 @@ export default function AdminDashboard() {
         `${process.env.NEXT_PUBLIC_API_URL}/user/${selectedUser._id}`,
         {
           method: "PUT",
-          body: JSON.stringify(selectedUser),
+          body: JSON.stringify({
+            ...selectedUser,
+            username: formData.username,
+            email: formData.email,
+            password: formData.password,
+            role: formData.role,
+          }),
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${authUtils.getToken()}`,
@@ -138,18 +144,6 @@ export default function AdminDashboard() {
         throw new Error("Failed to fetch users");
       }
 
-      const updatedUsers = users.map((user) =>
-        user.id === selectedUser.id
-          ? {
-              ...user,
-              username: formData.username,
-              email: formData.email,
-              role: formData.role,
-            }
-          : user
-      );
-
-      setUsers(updatedUsers);
       setIsEditDialogOpen(false);
       setSelectedUser(null);
       setFormData({ username: "", email: "", password: "", role: "client" });
